@@ -1273,8 +1273,8 @@
                 activeEl.className = 'flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary border-l-4 border-primary transition-all nav-link font-semibold shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]';
             }
             
-            // Tutup sidebar otomatis di mobile setelah klik
-            if(window.innerWidth < 1024 && isSidebarOpen) toggleSidebar();
+            // Tutup sidebar otomatis setelah menu diklik
+            if(isSidebarOpen) toggleSidebar();
         }
 
         // --- MANAJEMEN DEPARTEMEN LOGIC (100% DB FETCH) ---
