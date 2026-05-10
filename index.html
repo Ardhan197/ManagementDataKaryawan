@@ -1926,7 +1926,12 @@ function doGet(e) {
 
         async function startScanner(type) {
             try {
-                await navigator.mediaDevices.getUserMedia({ video: true });
+                // Meminta izin kamera secara eksplisit terlebih dahulu
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                // Matikan stream ini segera karena Html5QrcodeScanner akan meminta streamnya sendiri
+                // Jika tidak dimatikan, kamera akan "terkunci" dan gagal diakses oleh library
+                stream.getTracks().forEach(track => track.stop());
+                
                 currentScanType = type;
                 const scannerContainer = document.getElementById('scannerContainer');
                 const scannerTitle = document.getElementById('scannerTitle');
@@ -1947,7 +1952,7 @@ function doGet(e) {
                 }
             } catch (err) {
                 console.error("Akses kamera gagal:", err);
-                showToast('Akses kamera ditolak. Harap izinkan penggunaan kamera di browser Anda.', 'error');
+                showToast('Akses kamera ditolak. Harap izinkan pengaturan kamera di browser.', 'error');
             }
         }
 
