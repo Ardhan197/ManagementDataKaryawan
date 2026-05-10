@@ -1909,7 +1909,7 @@ function doGet(e) {
             let salaryFormatted = '-';
             if (emp.salary) {
                 let rawSal = parseRawNum(emp.salary);
-                salaryFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(rawSal);
+                salaryFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(rawSal);
             }
             document.getElementById('viewSalary').textContent = salaryFormatted;
             document.getElementById('viewBankAccount').textContent = emp.bankAccount || '-';
@@ -2254,7 +2254,7 @@ function doGet(e) {
             let currentSalary = ((baseSalary / 30) * effectiveDays) - loan;
             if (currentSalary < 0) currentSalary = 0;
 
-            const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
+            const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 2 });
             resultCell.textContent = formatter.format(currentSalary);
         }
 
@@ -2283,7 +2283,7 @@ function doGet(e) {
             let totalSalary = 0;
             activeEmployees.forEach(emp => { totalSalary += parseRawNum(emp.salary); });
             
-            const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
+            const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 2 });
             document.getElementById('salaryTotalAmount').textContent = formatter.format(totalSalary);
             document.getElementById('salaryAvgAmount').textContent = activeEmployees.length > 0 ? formatter.format(totalSalary / activeEmployees.length) : 'Rp 0';
 
