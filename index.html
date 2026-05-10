@@ -90,7 +90,7 @@
     <div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden transition-all duration-300 opacity-0" onclick="toggleSidebar()"></div>
 
     <!-- Sidebar Menu -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-dark text-slate-300 z-50 transform -translate-x-full lg:-translate-x-full transition-transform duration-400 cubic-bezier(0.16, 1, 0.3, 1) flex flex-col shadow-[20px_0_40px_rgba(0,0,0,0.1)] border-r border-slate-800">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-dark text-slate-300 z-50 transform -translate-x-full transition-transform duration-500 ease-out flex flex-col shadow-[20px_0_40px_rgba(0,0,0,0.1)] border-r border-slate-800">
         <div class="flex items-center justify-between h-20 px-6 bg-slate-900/50 backdrop-blur-md border-b border-slate-800/50 relative overflow-hidden">
             <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl transform translate-x-10 -translate-y-10"></div>
             <div class="flex items-center gap-3 relative z-10">
@@ -1147,12 +1147,12 @@
             <button onclick="closeImageModal()" class="absolute top-6 right-6 text-white/50 hover:text-white bg-white/10 backdrop-blur-md border border-white/20 rounded-full w-12 h-12 flex items-center justify-center transition-colors shadow-lg">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
-            <img id="imageModalContent" src="" class="max-w-full max-h-full rounded-2xl shadow-2xl object-contain transform scale-95 transition-transform duration-500 cubic-bezier(0.16, 1, 0.3, 1) border-4 border-white/10">
+            <img id="imageModalContent" src="" class="max-w-full max-h-full rounded-2xl shadow-2xl object-contain transform scale-95 transition-transform duration-500 ease-out border-4 border-white/10">
         </div>
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 transition-all duration-400 cubic-bezier(0.16, 1, 0.3, 1) z-[90] flex items-center gap-3.5 bg-slate-900 text-white px-5 py-4 rounded-2xl shadow-2xl pointer-events-none border border-slate-700">
+    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 transition-all duration-500 ease-out z-[90] flex items-center gap-3.5 bg-slate-900 text-white px-5 py-4 rounded-2xl shadow-2xl pointer-events-none border border-slate-700">
         <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0">
             <i id="toastIcon" class="fa-solid fa-check text-emerald-400 text-sm"></i>
         </div>
