@@ -2242,16 +2242,20 @@ function doGet(e) {
 
             if (!daysInput || !loanInput || !resultCell) return;
 
-            let days = parseFloat(daysInput.value) || 0;
+            // Menggunakan exact hours untuk perhitungan presisi sampai ke menit
+            let totalHours = parseFloat(daysInput.getAttribute('data-exact-hours')) || 0;
             let loan = parseRawNum(loanInput.value);
 
-            // Logika Setting: Batasi Maksimal 30 Hari jika setting Non-Aktif
-            let effectiveDays = days;
-            if (appSettings.salaryMethod === 'capped30' && days > 30) {
-                effectiveDays = 30;
+            // Logika Setting: Batasi Maksimal 30 Hari (360 Jam) jika setting Non-Aktif
+            let effectiveHours = totalHours;
+            if (appSettings.salaryMethod === 'capped30' && totalHours > 360) {
+                effectiveHours = 360;
             }
 
-            let currentSalary = ((baseSalary / 30) * effectiveDays) - loan;
+            // Gaji Pokok dibagi 30 hari, lalu dibagi 12 jam untuk tarif per jam
+            let ratePerHour = (baseSalary / 30) / 12;
+            let currentSalary = (ratePerHour * effectiveHours) - loan;
+            
             if (currentSalary < 0) currentSalary = 0;
 
             const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 2 });
@@ -2308,11 +2312,11 @@ function doGet(e) {
                         }
                     });
 
-                    let workDays = +(totalHours / 12).toFixed(2); // Dihitung dalam angka bersih
+                    let workDays = +(totalHours / 12).toFixed(2); // Hanya untuk tampilan UI agar rapi
                     
                     // Informasi peringatan (Jika Setting dibatasi & Overtime melebihi 30 hari)
                     let warningTag = '';
-                    if (appSettings.salaryMethod === 'capped30' && workDays > 30) {
+                    if (appSettings.salaryMethod === 'capped30' && totalHours > 360) {
                         warningTag = `<div class="text-[10px] text-amber-500 mt-0.5 font-medium">Maks. 30 Hari</div>`;
                     }
 
@@ -2325,7 +2329,8 @@ function doGet(e) {
                             <td class="py-3 px-6 text-sm text-slate-600 font-mono">${rek}</td>
                             <td class="py-3 px-6 text-sm font-medium text-slate-900 text-right">${sal}</td>
                             <td class="py-3 px-6 text-center">
-                                <input type="number" min="0" max="31" step="0.01" id="workDays_${emp.id}" value="${workDays}" readonly class="w-16 px-2 py-1 text-sm border border-slate-200 bg-slate-100 rounded focus:outline-none focus:border-primary text-center cursor-not-allowed" title="Dihitung otomatis dari rekap absen pada bulan terpilih">
+                                <!-- data-exact-hours menyimpan waktu presisi mutlak tanpa pembulatan -->
+                                <input type="number" min="0" max="31" step="0.01" id="workDays_${emp.id}" value="${workDays}" data-exact-hours="${totalHours}" readonly class="w-16 px-2 py-1 text-sm border border-slate-200 bg-slate-100 rounded focus:outline-none focus:border-primary text-center cursor-not-allowed" title="Dihitung otomatis dari rekap absen pada bulan terpilih">
                                 <div class="text-[10px] text-slate-400 mt-1">x 12 Jam/hari</div>
                                 ${warningTag}
                             </td>
