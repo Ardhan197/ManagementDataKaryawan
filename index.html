@@ -147,6 +147,12 @@
                         <span>Data Karyawan</span>
                     </a>
                 </li>
+                <li id="nav-my-profile-container" style="display: none;">
+                    <a href="#" onclick="viewEmployee(currentUser.id)" id="nav-my-profile" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800/80 hover:text-white border-l-4 border-transparent hover:border-slate-600 transition-all group nav-link font-medium">
+                        <i class="fa-solid fa-id-badge w-5 text-center group-hover:text-purple-400 transition-colors"></i> 
+                        <span>Profil Saya</span>
+                    </a>
+                </li>
                 <li>
                     <a href="#" onclick="showPage('departmentPage')" id="nav-department" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800/80 hover:text-white border-l-4 border-transparent hover:border-slate-600 transition-all group nav-link font-medium">
                         <i class="fa-solid fa-network-wired w-5 text-center group-hover:text-blue-400 transition-colors"></i> 
@@ -260,8 +266,8 @@
                             </span>
                             Sistem Aktif
                         </div>
-                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-slate-300">Halo, Selamat Datang! 👋</h1>
-                        <p class="text-slate-300 text-base sm:text-lg leading-relaxed font-medium">Platform manajemen SDM terpadu. Pantau kehadiran, kelola data tim, dan kalkulasi penggajian secara otomatis dengan tingkat presisi tinggi.</p>
+                        <h1 id="dashHeroTitle" class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-slate-300">Halo, Selamat Datang! 👋</h1>
+                        <p id="dashHeroDesc" class="text-slate-300 text-base sm:text-lg leading-relaxed font-medium">Platform manajemen SDM terpadu. Pantau kehadiran, kelola data tim, dan kalkulasi penggajian secara otomatis dengan tingkat presisi tinggi.</p>
                         <div class="mt-8 flex flex-wrap gap-4">
                             <button onclick="showPage('attendancePage')" class="bg-gradient-to-r from-primary to-teal-500 hover:from-primaryHover hover:to-teal-600 text-white font-bold px-6 py-3.5 rounded-2xl transition-all shadow-glow hover:-translate-y-1 flex items-center gap-2">
                                 <i class="fa-solid fa-qrcode text-lg"></i> Buka Scanner Absensi
@@ -645,20 +651,30 @@
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
                 <div>
                     <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Arsip Karyawan Keluar</h1>
-                    <p class="text-slate-500 text-sm mt-2 font-medium">Daftar arsip historis karyawan yang telah mengundurkan diri.</p>
+                    <p class="text-slate-500 text-sm mt-2 font-medium">Daftar arsip historis karyawan yang telah mengundurkan diri atau dinonaktifkan.</p>
                 </div>
-                <button onclick="showToast('Fitur proses resign sedang dalam pengembangan.', 'success')" class="bg-white border-2 border-slate-200 text-slate-700 hover:border-slate-300 px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-sm">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Formulir Resign
-                </button>
             </div>
             
             <div class="glass-card rounded-[2rem] shadow-soft overflow-hidden">
-                <div class="flex flex-col items-center justify-center py-24 px-4 text-center">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/80 border-b border-slate-100">
+                                <th class="px-8 py-5 text-left text-xs font-extrabold text-slate-500 uppercase tracking-widest">Karyawan</th>
+                                <th class="px-6 py-5 text-left text-xs font-extrabold text-slate-500 uppercase tracking-widest">Jabatan Terakhir</th>
+                                <th class="px-6 py-5 text-left text-xs font-extrabold text-slate-500 uppercase tracking-widest">Tanggal Masuk</th>
+                                <th class="px-6 py-5 text-center text-xs font-extrabold text-slate-500 uppercase tracking-widest">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resignTableBody" class="divide-y divide-slate-100/80 bg-white/30"></tbody>
+                    </table>
+                </div>
+                <div id="resignEmpty" class="hidden flex-col items-center justify-center py-24 px-4 text-center">
                     <div class="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-6 border-4 border-white shadow-sm">
                         <i class="fa-solid fa-box-archive text-4xl text-slate-300"></i>
                     </div>
                     <h3 class="text-xl font-extrabold text-slate-800 mb-2">Arsip Bersih</h3>
-                    <p class="text-sm font-medium text-slate-500 max-w-sm">Saat ini belum ada data karyawan dengan status resign di dalam sistem.</p>
+                    <p class="text-sm font-medium text-slate-500 max-w-sm">Saat ini belum ada data karyawan dengan status Non-Aktif di dalam sistem.</p>
                 </div>
             </div>
         </div>
@@ -670,13 +686,26 @@
                     <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight text-rose-600">Daftar Hitam (Blacklist)</h1>
                     <p class="text-slate-500 text-sm mt-2 font-medium">Kelola database individu berisiko tinggi untuk pencegahan rekrutmen.</p>
                 </div>
-                <button onclick="showToast('Fitur tambah blacklist dalam pengembangan.', 'success')" class="bg-rose-600 hover:bg-rose-700 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-rose-600/30 flex items-center gap-2">
+                <button onclick="openBlacklistModal()" class="bg-rose-600 hover:bg-rose-700 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-rose-600/30 flex items-center gap-2">
                     <i class="fa-solid fa-ban"></i> Entri Blacklist
                 </button>
             </div>
             
             <div class="glass-card rounded-[2rem] shadow-soft overflow-hidden border-rose-100">
-                <div class="flex flex-col items-center justify-center py-24 px-4 text-center">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full border-collapse">
+                        <thead>
+                            <tr class="bg-rose-50/50 border-b border-rose-100">
+                                <th class="px-8 py-5 text-left text-xs font-extrabold text-rose-500 uppercase tracking-widest">Nama & KTP</th>
+                                <th class="px-6 py-5 text-left text-xs font-extrabold text-rose-500 uppercase tracking-widest">Alasan/Catatan</th>
+                                <th class="px-6 py-5 text-left text-xs font-extrabold text-rose-500 uppercase tracking-widest">Tanggal Input</th>
+                                <th class="px-6 py-5 text-right text-xs font-extrabold text-rose-500 uppercase tracking-widest">Opsi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="blacklistTableBody" class="divide-y divide-slate-100/80 bg-white/30"></tbody>
+                    </table>
+                </div>
+                <div id="blacklistEmpty" class="hidden flex-col items-center justify-center py-24 px-4 text-center">
                     <div class="w-24 h-24 bg-rose-50 rounded-full flex items-center justify-center mb-6 border-4 border-white shadow-sm">
                         <i class="fa-solid fa-shield-halved text-4xl text-rose-300"></i>
                     </div>
@@ -688,165 +717,31 @@
 
     </main>
 
-    <!-- Modal Form Tambah/Edit Karyawan -->
-    <div id="employeeModal" class="fixed inset-0 z-[60] hidden" role="dialog" aria-modal="true">
-        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
-        <div class="fixed inset-0 z-10 flex items-center justify-center p-4 sm:p-0">
-            <div class="relative transform flex flex-col w-full max-w-3xl bg-white rounded-[2rem] shadow-2xl transition-all max-h-[95vh] sm:max-h-[90vh] border border-slate-100 mt-6">
-                
-                <!-- Floating Icon -->
-                <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-teal-500 text-white shadow-glow z-20 transform rotate-3">
-                    <i class="fa-solid fa-user-plus text-2xl -rotate-3"></i>
+    <!-- Modal Blacklist Baru -->
+    <div id="blacklistModal" class="fixed inset-0 z-[60] hidden" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeBlacklistModal()"></div>
+        <div class="fixed inset-0 z-10 flex items-center justify-center p-4">
+            <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden relative">
+                <div class="bg-rose-50 px-6 py-5 border-b border-rose-100 flex items-center justify-between">
+                    <h3 class="font-extrabold text-slate-900 text-lg">Tambah ke Blacklist</h3>
+                    <button onclick="closeBlacklistModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark"></i></button>
                 </div>
-                
-                <!-- Modal Body - Scrollable Area -->
-                <div class="flex-1 overflow-y-auto bg-white px-6 pb-6 pt-14 sm:px-10 sm:pt-14 sm:pb-8 rounded-t-[2rem] custom-scrollbar">
-                    <div class="w-full">
-                        <div class="text-center mb-8">
-                            <h3 class="text-2xl font-extrabold text-slate-900" id="modalTitle">Formulir Karyawan</h3>
-                            <p class="text-sm font-medium text-slate-500 mt-1">Lengkapi data profil dengan akurat sesuai dokumen.</p>
-                        </div>
-                        
-                        <form id="employeeForm" class="space-y-8">
-                            <input type="hidden" id="employeeId">
-                            
-                            <!-- Group 1: Informasi Pribadi -->
-                            <div class="relative">
-                                <h4 class="text-xs font-extrabold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
-                                    <span class="w-6 h-px bg-primary/30"></span> Data Personal
-                                </h4>
-                                <div class="bg-slate-50/50 p-6 rounded-2xl border border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                    <div class="sm:col-span-2">
-                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nama Lengkap Sesuai KTP</label>
-                                        <input type="text" id="name" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium text-sm transition-all shadow-sm">
-                                    </div>
-                                    <div>
-                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Alamat Email Aktif</label>
-                                        <input type="email" id="email" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium text-sm transition-all shadow-sm">
-                                    </div>
-                                    <div>
-                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nomor Handphone (WA)</label>
-                                        <input type="tel" id="phone" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium text-sm transition-all shadow-sm">
-                                    </div>
-                                    <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-5 border-t border-slate-100 pt-5 mt-2">
-                                        <div>
-                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Gender</label>
-                                            <select id="gender" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium text-sm transition-all shadow-sm cursor-pointer">
-                                                <option value="" disabled selected>Pilih...</option>
-                                                <option value="Laki-laki">Laki-laki</option>
-                                                <option value="Perempuan">Perempuan</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Kota Kelahiran</label>
-                                            <input type="text" id="birthPlace" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium text-sm transition-all shadow-sm">
-                                        </div>
-                                        <div>
-                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Tanggal Lahir</label>
-                                            <input type="date" id="birthDate" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium text-sm transition-all shadow-sm cursor-pointer">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Group Tambahan: Kontak Darurat -->
-                            <div class="relative">
-                                <h4 class="text-xs font-extrabold text-rose-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                    <span class="w-6 h-px bg-rose-500/30"></span> Kontak Darurat (Emergency)
-                                </h4>
-                                <div class="bg-rose-50/30 p-6 rounded-2xl border border-rose-100/50 grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                    <div>
-                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nama Kontak & Relasi</label>
-                                        <input type="text" id="emContactName" placeholder="Cth: Siti (Istri)" class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 font-medium text-sm transition-all shadow-sm">
-                                    </div>
-                                    <div>
-                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">No HP Darurat</label>
-                                        <input type="tel" id="emContactPhone" placeholder="0812..." class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 font-medium text-sm transition-all shadow-sm">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Group 2: Informasi Pekerjaan -->
-                            <div class="relative">
-                                <h4 class="text-xs font-extrabold text-blue-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                    <span class="w-6 h-px bg-blue-500/30"></span> Karir & Keuangan
-                                </h4>
-                                <div class="bg-slate-50/50 p-6 rounded-2xl border border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                    <div>
-                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Posisi/Jabatan</label>
-                                        <input type="text" id="position" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium text-sm transition-all shadow-sm">
-                                    </div>
-                                    <div>
-                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5" id="formDeptLabel">Penempatan Divisi</label>
-                                        <select id="department" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium text-sm transition-all shadow-sm cursor-pointer">
-                                            <option value="" disabled selected id="formDeptPlaceholder">Pilih Divisi</option>
-                                            <!-- Dinamis -->
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Tanggal Mulai Bekerja</label>
-                                        <input type="date" id="joinDate" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium text-sm transition-all shadow-sm cursor-pointer">
-                                    </div>
-                                    <div>
-                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Status Karyawan</label>
-                                        <select id="status" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium text-sm transition-all shadow-sm cursor-pointer">
-                                            <option value="Aktif">Aktif Bekerja</option>
-                                            <option value="Cuti">Sedang Cuti</option>
-                                            <option value="Non-Aktif">Non-Aktif / Suspend</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="sm:col-span-2 border-t border-slate-100 pt-5 mt-2 grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                        <div>
-                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Gaji Pokok</label>
-                                            <div class="relative">
-                                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                                    <span class="text-slate-400 font-bold text-sm">Rp</span>
-                                                </div>
-                                                <input type="text" inputmode="numeric" id="salary" oninput="formatRupiah(this)" required class="block w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-bold text-sm transition-all shadow-sm text-slate-800">
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Bank & Nomor Rekening</label>
-                                            <input type="text" id="bankAccount" placeholder="BCA 123..." required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium text-sm transition-all shadow-sm">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Group 3: Dokumen & Foto -->
-                            <div class="relative">
-                                <h4 class="text-xs font-extrabold text-amber-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                    <span class="w-6 h-px bg-amber-500/30"></span> Lampiran Digital
-                                </h4>
-                                <div class="bg-slate-50/50 p-6 rounded-2xl border border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                    <div>
-                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Pas Foto Profil</label>
-                                        <input type="file" id="profileImage" accept="image/*" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-white file:text-slate-700 file:shadow-sm hover:file:bg-slate-50 file:cursor-pointer file:transition-colors border border-slate-200 rounded-xl bg-white p-1">
-                                    </div>
-                                    <div>
-                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Scan/Foto KTP</label>
-                                        <input type="file" id="ktpImage" accept="image/*" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-white file:text-slate-700 file:shadow-sm hover:file:bg-slate-50 file:cursor-pointer file:transition-colors border border-slate-200 rounded-xl bg-white p-1">
-                                    </div>
-                                    <div class="sm:col-span-2">
-                                        <p class="text-[11px] text-slate-400 font-medium flex items-center gap-1.5 bg-white py-2 px-3 rounded-lg border border-slate-100 inline-flex"><i class="fa-solid fa-cloud-arrow-up text-amber-400"></i> File otomatis terenkripsi dan disimpan ke Google Drive Anda (maksimal 2MB).</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">Nama Lengkap</label>
+                        <input type="text" id="blName" class="w-full rounded-xl border border-slate-200 px-4 py-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-sm font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">No. KTP (Opsional)</label>
+                        <input type="text" id="blKtp" class="w-full rounded-xl border border-slate-200 px-4 py-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-sm font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">Alasan/Pelanggaran</label>
+                        <textarea id="blReason" rows="3" class="w-full rounded-xl border border-slate-200 px-4 py-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-sm font-medium"></textarea>
                     </div>
                 </div>
-                
-                <!-- Modal Footer -->
-                <div class="bg-white/80 backdrop-blur-md px-6 py-5 sm:flex sm:flex-row-reverse sm:px-10 border-t border-slate-100 rounded-b-[2rem] relative z-20">
-                    <div id="saveOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-30 hidden items-center justify-center rounded-b-[2rem]">
-                        <div class="flex items-center gap-3">
-                            <div class="loader w-5 h-5"></div>
-                            <span class="text-sm font-bold text-slate-600">Menyimpan ke awan...</span>
-                        </div>
-                    </div>
-                    <button type="button" onclick="saveEmployee()" class="inline-flex w-full justify-center items-center rounded-xl bg-gradient-to-r from-primary to-teal-500 px-6 py-3.5 text-sm font-bold text-white shadow-glow hover:from-primaryHover hover:to-teal-600 transition-all hover:-translate-y-0.5 sm:ml-3 sm:w-auto">Simpan Formulir</button>
-                    <button type="button" onclick="closeModal()" class="mt-3 inline-flex w-full justify-center items-center rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-slate-600 shadow-sm border border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition-colors sm:mt-0 sm:w-auto">Batal</button>
+                <div class="p-6 border-t border-slate-100 bg-slate-50">
+                    <button onclick="saveBlacklist()" class="w-full bg-rose-600 hover:bg-rose-700 text-white rounded-xl py-3.5 text-sm font-bold shadow-md transition-all">Simpan Data Blacklist</button>
                 </div>
             </div>
         </div>
@@ -1252,6 +1147,7 @@
         let departments = [];
         let editDepartmentIndex = -1;
         let allAttendances = [];
+        let blacklists = [];
         let appSettings = { deptLabel: 'Departemen', salaryMethod: 'extra31' };
         
         let accounts = []; // Menyimpan akun sistem dari Google Sheets
@@ -1336,6 +1232,7 @@
             const menuRes = document.getElementById('nav-resign').parentElement;
             const menuBlk = document.getElementById('nav-blacklist').parentElement;
             const menuSet = document.getElementById('nav-settings');
+            const menuMyProfile = document.getElementById('nav-my-profile-container');
             
             // Elemen Tombol
             const btnDashAddEmp = document.getElementById('btnDashAddEmp');
@@ -1351,6 +1248,8 @@
             menuRes.style.display = (isAll || permArray.includes('resign')) ? 'block' : 'none';
             menuBlk.style.display = (isAll || permArray.includes('blacklist')) ? 'block' : 'none';
             menuSet.style.display = (isAll || permArray.includes('settings')) ? 'block' : 'none';
+            
+            if (menuMyProfile) menuMyProfile.style.display = isKaryawan ? 'block' : 'none';
             
             // Hide elements specific to Karyawan mode
             if(btnDashAddEmp) btnDashAddEmp.style.display = (isAll || permArray.includes('employee')) && !isKaryawan ? 'flex' : 'none';
@@ -1447,9 +1346,11 @@
             } else if (pageId === 'resignPage') {
                 document.getElementById('topTitle').textContent = 'Arsip Resign';
                 activeNavId = 'nav-resign';
+                renderResign();
             } else if (pageId === 'blacklistPage') {
                 document.getElementById('topTitle').textContent = 'Sistem Blacklist';
                 activeNavId = 'nav-blacklist';
+                renderBlacklist();
             }
 
             if(activeNavId) {
@@ -1605,6 +1506,11 @@
     s.appendRow(['salaryMethod', 'extra31']);
   }
   
+  if(!ss.getSheetByName('Blacklist')) {
+    var s = ss.insertSheet('Blacklist');
+    s.appendRow(['id', 'name', 'ktp', 'reason', 'date']);
+  }
+
   // Tab untuk Data Login
   if(!ss.getSheetByName('Accounts')) {
     var s = ss.insertSheet('Accounts');
@@ -1725,6 +1631,32 @@ function doPost(e) {
       }
       return ContentService.createTextOutput(JSON.stringify({"status":"success"})).setMimeType(ContentService.MimeType.JSON);
     }
+    
+    if (action === 'sync_blacklist') {
+      var blSheet = ss.getSheetByName('Blacklist') || ss.insertSheet('Blacklist');
+      blSheet.clear();
+      blSheet.appendRow(['id', 'name', 'ktp', 'reason', 'date']);
+      if (data.blacklists && data.blacklists.length > 0) {
+         var rows = data.blacklists.map(function(b){ return [b.id, b.name, b.ktp, b.reason, b.date]; });
+         blSheet.getRange(2, 1, rows.length, 5).setValues(rows);
+      }
+      return ContentService.createTextOutput(JSON.stringify({"status":"success"})).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    if (action === 'update_loan') {
+      var empSheet = ss.getSheets()[0];
+      var dataAll = empSheet.getDataRange().getValues();
+      var idIdx = dataAll[0].indexOf('id');
+      var loanIdx = dataAll[0].indexOf('loan');
+      if(loanIdx === -1) { loanIdx = dataAll[0].length; empSheet.getRange(1, loanIdx + 1).setValue('loan'); }
+      for (var i = 1; i < dataAll.length; i++) {
+        if (dataAll[i][idIdx] === data.id) {
+          empSheet.getRange(i + 1, loanIdx + 1).setValue(data.loan);
+          break;
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({"status":"success"})).setMimeType(ContentService.MimeType.JSON);
+    }
 
     function saveImage(base64, filename, mime) {
       try {
@@ -1747,7 +1679,7 @@ function doPost(e) {
     }
 
     var sheet = ss.getSheets()[0]; 
-    var defaultEmpHeaders = ['id', 'name', 'email', 'gender', 'birthPlace', 'birthDate', 'phone', 'joinDate', 'position', 'department', 'salary', 'bankAccount', 'status', 'profileUrl', 'ktpUrl', 'emContactName', 'emContactPhone'];
+    var defaultEmpHeaders = ['id', 'name', 'email', 'gender', 'birthPlace', 'birthDate', 'phone', 'joinDate', 'position', 'department', 'salary', 'bankAccount', 'status', 'profileUrl', 'ktpUrl', 'emContactName', 'emContactPhone', 'loan'];
     
     var currentHeaders = ensureHeaders(sheet, defaultEmpHeaders);
     var headerMap = {};
@@ -1851,6 +1783,7 @@ function doGet(e) {
 
     var attendanceData = getSheetData('Attendance', ['Tanggal', 'Waktu Masuk', 'Waktu Pulang', 'ID Karyawan', 'Nama']);
     var departmentsData = getSheetData('Departments', ['Name']);
+    var blacklistData = getSheetData('Blacklist', ['id', 'name', 'ktp', 'reason', 'date']);
     var deptArray = [];
     for (var i = 0; i < departmentsData.length; i++) {
       if (departmentsData[i].Name) deptArray.push(departmentsData[i].Name);
@@ -1868,6 +1801,7 @@ function doGet(e) {
       employees: empData,
       attendance: attendanceData,
       departments: deptArray,
+      blacklists: blacklistData,
       settings: settingsObj,
       accounts: accountsData
     })).setMimeType(ContentService.MimeType.JSON);
@@ -1965,6 +1899,12 @@ function doGet(e) {
                         if(document.getElementById('dashboardPage').classList.contains('active')) renderDashboard();
                         if(document.getElementById('departmentPage').classList.contains('active')) renderDepartmentList();
                     }
+
+                    // Update Blacklists
+                    if (newData.blacklists && JSON.stringify(blacklists) !== JSON.stringify(newData.blacklists)) {
+                        blacklists = newData.blacklists;
+                        if(document.getElementById('blacklistPage').classList.contains('active')) renderBlacklist();
+                    }
                 }
                 
                 dbIcon.className = "fa-solid fa-database text-primary"; // Icon Hijau sukses
@@ -2049,6 +1989,17 @@ function doGet(e) {
         function renderDashboard() {
             if (!currentUser) return;
             const isKaryawan = currentUser.role === 'karyawan';
+
+            // Personalisasi Hero Dashboard
+            const dashHeroTitle = document.getElementById('dashHeroTitle');
+            const dashHeroDesc = document.getElementById('dashHeroDesc');
+            if (isKaryawan) {
+                if(dashHeroTitle) dashHeroTitle.innerHTML = `Halo, ${currentUser.name.split(' ')[0]}! 👋`;
+                if(dashHeroDesc) dashHeroDesc.textContent = 'Selamat datang di portal karyawan. Anda dapat melihat riwayat absensi, slip gaji, dan data profil Anda secara mandiri di sini.';
+            } else {
+                if(dashHeroTitle) dashHeroTitle.innerHTML = 'Halo, Selamat Datang! 👋';
+                if(dashHeroDesc) dashHeroDesc.textContent = 'Platform manajemen SDM terpadu. Pantau kehadiran, kelola data tim, dan kalkulasi penggajian secara otomatis dengan tingkat presisi tinggi.';
+            }
 
             // Hitung Statistik
             const activeEmpCount = employees.filter(e => e.status === 'Aktif').length;
@@ -2969,6 +2920,7 @@ function doGet(e) {
                     // Jika login Karyawan, input potongan dinonaktifkan (readonly)
                     let readonlyAttr = currentUser.role === 'karyawan' ? 'readonly' : '';
                     let readonlyClass = currentUser.role === 'karyawan' ? 'bg-slate-100 cursor-not-allowed border-transparent' : 'bg-white border-slate-200';
+                    let loanVal = emp.loan || 0;
 
                     tbody.innerHTML += `
                         <tr class="hover:bg-slate-50/80 transition-colors cursor-default">
@@ -2985,7 +2937,7 @@ function doGet(e) {
                                 ${warningTag}
                             </td>
                             <td class="py-4 px-6 text-center">
-                                <input type="text" id="loan_${emp.id}" value="0" oninput="formatRupiah(this); calcSalary('${emp.id}', ${rawSal})" class="w-24 px-3 py-1.5 text-sm font-bold border shadow-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-right transition-all ${readonlyClass}" ${readonlyAttr}>
+                                <input type="text" id="loan_${emp.id}" value="${loanVal}" oninput="handleLoanChange('${emp.id}', this, ${rawSal})" class="w-24 px-3 py-1.5 text-sm font-bold border shadow-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-right transition-all ${readonlyClass}" ${readonlyAttr}>
                             </td>
                             <td class="py-4 px-6 text-sm font-black text-emerald-600 text-right bg-emerald-50/30" id="currentSalary_${emp.id}">Rp 0</td>
                             <td class="py-4 px-8 text-right">
@@ -3052,6 +3004,136 @@ function doGet(e) {
         const initMonthStr = `${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}`;
         document.getElementById('attendanceDateFilter').value = initDateStr;
         document.getElementById('salaryMonthFilter').value = initMonthStr;
+
+        // --- TAMBAHAN LOGIC: POTONGAN, RESIGN, BLACKLIST ---
+        let loanSaveTimeouts = {};
+        function handleLoanChange(empId, inputEl, baseSal) {
+            formatRupiah(inputEl);
+            calcSalary(empId, baseSal);
+            
+            const val = parseRawNum(inputEl.value);
+            const emp = employees.find(e => e.id === empId);
+            if(emp) emp.loan = val; // update local
+            
+            clearTimeout(loanSaveTimeouts[empId]);
+            loanSaveTimeouts[empId] = setTimeout(async () => {
+                const gasUrl = getAppScriptUrl();
+                if(!gasUrl) return;
+                try {
+                    await fetch(gasUrl, {
+                        method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
+                        body: JSON.stringify({ action: 'update_loan', id: empId, loan: val })
+                    });
+                    showToast('Potongan Gaji Disimpan!', 'success');
+                } catch(e) { console.error(e); }
+            }, 1000); // debounce 1s
+        }
+
+        function renderResign() {
+            const tbody = document.getElementById('resignTableBody');
+            const empty = document.getElementById('resignEmpty');
+            const resignedEmps = employees.filter(e => e.status === 'Non-Aktif');
+
+            if(resignedEmps.length === 0) {
+                empty.classList.remove('hidden'); empty.classList.add('flex'); tbody.parentElement.classList.add('hidden');
+            } else {
+                empty.classList.add('hidden'); empty.classList.remove('flex'); tbody.parentElement.classList.remove('hidden');
+                tbody.innerHTML = '';
+                resignedEmps.forEach(emp => {
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-50/50 transition-colors">
+                            <td class="px-8 py-5">
+                                <div class="text-sm font-extrabold text-slate-800">${emp.name || '-'}</div>
+                                <div class="text-[11px] font-bold text-slate-400 mt-0.5">${emp.id || '-'}</div>
+                            </td>
+                            <td class="px-6 py-5 text-sm font-bold text-slate-600">${emp.position || '-'}</td>
+                            <td class="px-6 py-5 text-sm font-bold text-slate-500">${emp.joinDate || '-'}</td>
+                            <td class="px-6 py-5 text-center"><span class="px-3 py-1 bg-slate-100 text-slate-500 border border-slate-200 text-[10px] font-black uppercase rounded-lg">Non-Aktif</span></td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        function renderBlacklist() {
+            const tbody = document.getElementById('blacklistTableBody');
+            const empty = document.getElementById('blacklistEmpty');
+
+            if(blacklists.length === 0) {
+                empty.classList.remove('hidden'); empty.classList.add('flex'); tbody.parentElement.classList.add('hidden');
+            } else {
+                empty.classList.add('hidden'); empty.classList.remove('flex'); tbody.parentElement.classList.remove('hidden');
+                tbody.innerHTML = '';
+                blacklists.forEach(b => {
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-rose-50/30 transition-colors">
+                            <td class="px-8 py-5">
+                                <div class="text-sm font-extrabold text-rose-700">${b.name || '-'}</div>
+                                <div class="text-[11px] font-bold text-slate-400 mt-0.5"><i class="fa-regular fa-id-card mr-1"></i> ${b.ktp || '-'}</div>
+                            </td>
+                            <td class="px-6 py-5 text-sm font-medium text-slate-700 max-w-xs break-words">${b.reason || '-'}</td>
+                            <td class="px-6 py-5 text-xs font-bold text-slate-500">${b.date || '-'}</td>
+                            <td class="px-6 py-5 text-right">
+                                <button onclick="deleteBlacklist('${b.id}')" class="text-slate-400 hover:text-rose-500 hover:bg-rose-50 w-8 h-8 rounded-lg flex items-center justify-center transition-all inline-flex"><i class="fa-solid fa-trash-can"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        function openBlacklistModal() {
+            document.getElementById('blName').value = '';
+            document.getElementById('blKtp').value = '';
+            document.getElementById('blReason').value = '';
+            document.getElementById('blacklistModal').classList.remove('hidden');
+        }
+        function closeBlacklistModal() {
+            document.getElementById('blacklistModal').classList.add('hidden');
+        }
+
+        async function saveBlacklist() {
+            const name = document.getElementById('blName').value.trim();
+            const ktp = document.getElementById('blKtp').value.trim();
+            const reason = document.getElementById('blReason').value.trim();
+            if(!name || !reason) return showToast('Nama & Alasan wajib diisi!', 'error');
+
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}-${('0'+(now.getMonth()+1)).slice(-2)}-${('0'+now.getDate()).slice(-2)}`;
+            const id = 'bl_' + Date.now();
+
+            const newBl = [...blacklists, { id, name, ktp, reason, date: dateStr }];
+            blacklists = newBl;
+            renderBlacklist();
+            closeBlacklistModal();
+
+            const gasUrl = getAppScriptUrl();
+            if(gasUrl) {
+                showToast('Menyimpan ke Daftar Hitam...', 'success');
+                await fetch(gasUrl, {
+                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify({ action: 'sync_blacklist', blacklists: newBl })
+                });
+            } else {
+                showToast('Hanya tersimpan lokal. Setel URL Sheets!', 'error');
+            }
+        }
+
+        async function deleteBlacklist(id) {
+            if(!confirm('Keluarkan dari Daftar Hitam?')) return;
+            const newBl = blacklists.filter(b => b.id !== id);
+            blacklists = newBl;
+            renderBlacklist();
+
+            const gasUrl = getAppScriptUrl();
+            if(gasUrl) {
+                await fetch(gasUrl, {
+                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify({ action: 'sync_blacklist', blacklists: newBl })
+                });
+                showToast('Dihapus dari Daftar Hitam', 'success');
+            }
+        }
 
     </script>
 </body>
