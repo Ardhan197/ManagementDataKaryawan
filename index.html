@@ -747,6 +747,170 @@
         </div>
     </div>
 
+    <!-- Modal Form Tambah/Edit Karyawan -->
+    <div id="employeeModal" class="fixed inset-0 z-[60] hidden" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
+        <div class="fixed inset-0 z-10 flex items-center justify-center p-4 sm:p-0">
+            <div class="relative transform flex flex-col w-full max-w-3xl bg-white rounded-[2rem] shadow-2xl transition-all max-h-[95vh] sm:max-h-[90vh] border border-slate-100 mt-6">
+                
+                <!-- Floating Icon -->
+                <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-teal-500 text-white shadow-glow z-20 transform rotate-3">
+                    <i class="fa-solid fa-user-plus text-2xl -rotate-3"></i>
+                </div>
+                
+                <!-- Modal Body - Scrollable Area -->
+                <div class="flex-1 overflow-y-auto bg-white px-6 pb-6 pt-14 sm:px-10 sm:pt-14 sm:pb-8 rounded-t-[2rem] custom-scrollbar">
+                    <div class="w-full">
+                        <div class="text-center mb-8">
+                            <h3 class="text-2xl font-extrabold text-slate-900" id="modalTitle">Formulir Karyawan</h3>
+                            <p class="text-sm font-medium text-slate-500 mt-1">Lengkapi data profil dengan akurat sesuai dokumen.</p>
+                        </div>
+                        
+                        <form id="employeeForm" class="space-y-8">
+                            <input type="hidden" id="employeeId">
+                            
+                            <!-- Group 1: Informasi Pribadi -->
+                            <div class="relative">
+                                <h4 class="text-xs font-extrabold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <span class="w-6 h-px bg-primary/30"></span> Data Personal
+                                </h4>
+                                <div class="bg-slate-50/50 p-6 rounded-2xl border border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nama Lengkap Sesuai KTP</label>
+                                        <input type="text" id="name" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium text-sm transition-all shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Alamat Email Aktif</label>
+                                        <input type="email" id="email" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium text-sm transition-all shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nomor Handphone (WA)</label>
+                                        <input type="tel" id="phone" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium text-sm transition-all shadow-sm">
+                                    </div>
+                                    <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-5 border-t border-slate-100 pt-5 mt-2">
+                                        <div>
+                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Gender</label>
+                                            <select id="gender" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium text-sm transition-all shadow-sm cursor-pointer">
+                                                <option value="" disabled selected>Pilih...</option>
+                                                <option value="Laki-laki">Laki-laki</option>
+                                                <option value="Perempuan">Perempuan</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Kota Kelahiran</label>
+                                            <input type="text" id="birthPlace" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium text-sm transition-all shadow-sm">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Tanggal Lahir</label>
+                                            <input type="date" id="birthDate" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium text-sm transition-all shadow-sm cursor-pointer">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Group Tambahan: Kontak Darurat -->
+                            <div class="relative">
+                                <h4 class="text-xs font-extrabold text-rose-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <span class="w-6 h-px bg-rose-500/30"></span> Kontak Darurat (Emergency)
+                                </h4>
+                                <div class="bg-rose-50/30 p-6 rounded-2xl border border-rose-100/50 grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nama Kontak & Relasi</label>
+                                        <input type="text" id="emContactName" placeholder="Cth: Siti (Istri)" class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 font-medium text-sm transition-all shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">No HP Darurat</label>
+                                        <input type="tel" id="emContactPhone" placeholder="0812..." class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 font-medium text-sm transition-all shadow-sm">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Group 2: Informasi Pekerjaan -->
+                            <div class="relative">
+                                <h4 class="text-xs font-extrabold text-blue-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <span class="w-6 h-px bg-blue-500/30"></span> Karir & Keuangan
+                                </h4>
+                                <div class="bg-slate-50/50 p-6 rounded-2xl border border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Posisi/Jabatan</label>
+                                        <input type="text" id="position" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium text-sm transition-all shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5" id="formDeptLabel">Penempatan Divisi</label>
+                                        <select id="department" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium text-sm transition-all shadow-sm cursor-pointer">
+                                            <option value="" disabled selected id="formDeptPlaceholder">Pilih Divisi</option>
+                                            <!-- Dinamis -->
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Tanggal Mulai Bekerja</label>
+                                        <input type="date" id="joinDate" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium text-sm transition-all shadow-sm cursor-pointer">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Status Karyawan</label>
+                                        <select id="status" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium text-sm transition-all shadow-sm cursor-pointer">
+                                            <option value="Aktif">Aktif Bekerja</option>
+                                            <option value="Cuti">Sedang Cuti</option>
+                                            <option value="Non-Aktif">Non-Aktif / Suspend</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="sm:col-span-2 border-t border-slate-100 pt-5 mt-2 grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                        <div>
+                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Gaji Pokok</label>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                                    <span class="text-slate-400 font-bold text-sm">Rp</span>
+                                                </div>
+                                                <input type="text" inputmode="numeric" id="salary" oninput="formatRupiah(this)" required class="block w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-bold text-sm transition-all shadow-sm text-slate-800">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Bank & Nomor Rekening</label>
+                                            <input type="text" id="bankAccount" placeholder="BCA 123..." required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium text-sm transition-all shadow-sm">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Group 3: Dokumen & Foto -->
+                            <div class="relative">
+                                <h4 class="text-xs font-extrabold text-amber-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <span class="w-6 h-px bg-amber-500/30"></span> Lampiran Digital
+                                </h4>
+                                <div class="bg-slate-50/50 p-6 rounded-2xl border border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Pas Foto Profil</label>
+                                        <input type="file" id="profileImage" accept="image/*" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-white file:text-slate-700 file:shadow-sm hover:file:bg-slate-50 file:cursor-pointer file:transition-colors border border-slate-200 rounded-xl bg-white p-1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Scan/Foto KTP</label>
+                                        <input type="file" id="ktpImage" accept="image/*" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-white file:text-slate-700 file:shadow-sm hover:file:bg-slate-50 file:cursor-pointer file:transition-colors border border-slate-200 rounded-xl bg-white p-1">
+                                    </div>
+                                    <div class="sm:col-span-2">
+                                        <p class="text-[11px] text-slate-400 font-medium flex items-center gap-1.5 bg-white py-2 px-3 rounded-lg border border-slate-100 inline-flex"><i class="fa-solid fa-cloud-arrow-up text-amber-400"></i> File otomatis terenkripsi dan disimpan ke Google Drive Anda (maksimal 2MB).</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="bg-white/80 backdrop-blur-md px-6 py-5 sm:flex sm:flex-row-reverse sm:px-10 border-t border-slate-100 rounded-b-[2rem] relative z-20">
+                    <div id="saveOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-30 hidden items-center justify-center rounded-b-[2rem]">
+                        <div class="flex items-center gap-3">
+                            <div class="loader w-5 h-5"></div>
+                            <span class="text-sm font-bold text-slate-600">Menyimpan ke awan...</span>
+                        </div>
+                    </div>
+                    <button type="button" onclick="saveEmployee()" class="inline-flex w-full justify-center items-center rounded-xl bg-gradient-to-r from-primary to-teal-500 px-6 py-3.5 text-sm font-bold text-white shadow-glow hover:from-primaryHover hover:to-teal-600 transition-all hover:-translate-y-0.5 sm:ml-3 sm:w-auto">Simpan Formulir</button>
+                    <button type="button" onclick="closeModal()" class="mt-3 inline-flex w-full justify-center items-center rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-slate-600 shadow-sm border border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition-colors sm:mt-0 sm:w-auto">Batal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal View Karyawan (Profil) -->
     <div id="viewModal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeViewModal()"></div>
