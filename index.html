@@ -886,10 +886,16 @@
                                     <div>
                                         <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Pas Foto Profil</label>
                                         <input type="file" id="profileImage" accept="image/*" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-white file:text-slate-700 file:shadow-sm hover:file:bg-slate-50 file:cursor-pointer file:transition-colors border border-slate-200 rounded-xl bg-white p-1">
+                                        <div id="profileImagePreview" class="mt-2 hidden">
+                                            <button type="button" onclick="event.preventDefault(); openImageModal(this.dataset.url)" class="text-[10px] text-blue-500 hover:text-blue-700 font-bold flex items-center gap-1.5 bg-blue-50 px-2 py-1 rounded-lg border border-blue-100 w-max"><i class="fa-solid fa-image"></i> Lihat Foto Tersimpan</button>
+                                        </div>
                                     </div>
                                     <div>
                                         <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Scan/Foto KTP</label>
                                         <input type="file" id="ktpImage" accept="image/*" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-white file:text-slate-700 file:shadow-sm hover:file:bg-slate-50 file:cursor-pointer file:transition-colors border border-slate-200 rounded-xl bg-white p-1">
+                                        <div id="ktpImagePreview" class="mt-2 hidden">
+                                            <button type="button" onclick="event.preventDefault(); openImageModal(this.dataset.url)" class="text-[10px] text-blue-500 hover:text-blue-700 font-bold flex items-center gap-1.5 bg-blue-50 px-2 py-1 rounded-lg border border-blue-100 w-max"><i class="fa-solid fa-image"></i> Lihat KTP Tersimpan</button>
+                                        </div>
                                     </div>
                                     <div class="sm:col-span-2">
                                         <p class="text-[11px] text-slate-400 font-medium flex items-center gap-1.5 bg-white py-2 px-3 rounded-lg border border-slate-100 inline-flex"><i class="fa-solid fa-cloud-arrow-up text-amber-400"></i> File otomatis terenkripsi dan disimpan ke Google Drive Anda (maksimal 2MB).</p>
@@ -2555,6 +2561,9 @@ function doGet(e) {
             modalPanel.classList.add('modal-enter');
             setTimeout(() => { modalPanel.classList.remove('modal-enter'); modalPanel.classList.add('modal-enter-active'); }, 10);
 
+            const profilePreview = document.getElementById('profileImagePreview');
+            const ktpPreview = document.getElementById('ktpImagePreview');
+
             if (id) {
                 modalTitle.textContent = 'Perbarui Profil Pribadi';
                 const emp = employees.find(e => e.id === id);
@@ -2583,6 +2592,21 @@ function doGet(e) {
                     document.getElementById('emContactPhone').value = emp.emContactPhone || ''; 
                     document.getElementById('profileImage').value = ''; 
                     document.getElementById('ktpImage').value = ''; 
+
+                    // Set URL untuk Tombol Pratinjau Foto jika ada
+                    if (emp.profileUrl) {
+                        profilePreview.classList.remove('hidden');
+                        profilePreview.querySelector('button').dataset.url = getDriveImageUrl(emp.profileUrl);
+                    } else {
+                        profilePreview.classList.add('hidden');
+                    }
+
+                    if (emp.ktpUrl) {
+                        ktpPreview.classList.remove('hidden');
+                        ktpPreview.querySelector('button').dataset.url = getDriveImageUrl(emp.ktpUrl);
+                    } else {
+                        ktpPreview.classList.add('hidden');
+                    }
                 }
             } else {
                 modalTitle.textContent = 'Registrasi Karyawan';
@@ -2594,6 +2618,8 @@ function doGet(e) {
                 document.getElementById('ktpImage').value = ''; 
                 document.getElementById('emContactName').value = ''; 
                 document.getElementById('emContactPhone').value = ''; 
+                profilePreview.classList.add('hidden');
+                ktpPreview.classList.add('hidden');
             }
         }
 
