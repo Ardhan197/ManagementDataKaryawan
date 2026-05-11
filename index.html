@@ -106,7 +106,7 @@
                 <button type="submit" class="w-full justify-center rounded-xl bg-gradient-to-r from-primary to-teal-500 px-4 py-3.5 text-sm font-bold text-white shadow-glow hover:from-primaryHover hover:to-teal-600 transition-all hover:-translate-y-0.5 mt-2">Masuk Sistem</button>
             </form>
             <div class="mt-6 text-center text-[10px] text-slate-400 font-bold">
-                (Karyawan gunakan ID. Default PIN: 12345)
+                (Karyawan gunakan ID Karyawan dan Password yang didaftarkan)
             </div>
         </div>
     </div>
@@ -854,6 +854,10 @@
                                             <option value="Non-Aktif">Non-Aktif / Suspend</option>
                                         </select>
                                     </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Password Login (Aplikasi)</label>
+                                        <input type="text" id="empPassword" placeholder="Cth: 12345" required class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium text-sm transition-all shadow-sm">
+                                    </div>
                                     
                                     <div class="sm:col-span-2 border-t border-slate-100 pt-5 mt-2 grid grid-cols-1 sm:grid-cols-2 gap-5">
                                         <div>
@@ -1358,9 +1362,9 @@
                     return showToast('Password salah!', 'error');
                 }
             } else {
-                // Cek Karyawan (Username = ID, Pass = 12345 default)
+                // Cek Karyawan (Username = ID, Pass = password yang didaftarkan)
                 const emp = employees.find(e => e.id === user);
-                if (emp && pass === '12345') {
+                if (emp && pass === (emp.password || '12345')) {
                     // Karyawan hanya bisa akses dashboard & absensi & gajinya sendiri
                     currentUser = { id: emp.id, name: emp.name, role: 'karyawan', permissions: 'dashboard,attendance,salary' };
                 } else {
@@ -1843,7 +1847,7 @@ function doPost(e) {
     }
 
     var sheet = ss.getSheets()[0]; 
-    var defaultEmpHeaders = ['id', 'name', 'email', 'gender', 'birthPlace', 'birthDate', 'phone', 'joinDate', 'position', 'department', 'salary', 'bankAccount', 'status', 'profileUrl', 'ktpUrl', 'emContactName', 'emContactPhone', 'loan'];
+    var defaultEmpHeaders = ['id', 'name', 'email', 'gender', 'birthPlace', 'birthDate', 'phone', 'joinDate', 'position', 'department', 'salary', 'bankAccount', 'status', 'profileUrl', 'ktpUrl', 'emContactName', 'emContactPhone', 'loan', 'password'];
     
     var currentHeaders = ensureHeaders(sheet, defaultEmpHeaders);
     var headerMap = {};
@@ -1928,7 +1932,7 @@ function doGet(e) {
     }
 
     var empSheet = ss.getSheets()[0];
-    var defaultEmpHeaders = ['id', 'name', 'email', 'gender', 'birthPlace', 'birthDate', 'phone', 'joinDate', 'position', 'department', 'salary', 'bankAccount', 'status', 'profileUrl', 'ktpUrl', 'emContactName', 'emContactPhone'];
+    var defaultEmpHeaders = ['id', 'name', 'email', 'gender', 'birthPlace', 'birthDate', 'phone', 'joinDate', 'position', 'department', 'salary', 'bankAccount', 'status', 'profileUrl', 'ktpUrl', 'emContactName', 'emContactPhone', 'loan', 'password'];
     ensureHeaders(empSheet, defaultEmpHeaders);
     
     var empData = [];
@@ -2303,12 +2307,13 @@ function doGet(e) {
             const salaryRaw = document.getElementById('salary').value.replace(/\./g, ''); 
             const bankAccount = document.getElementById('bankAccount').value.trim();
             const status = document.getElementById('status').value;
+            const password = document.getElementById('empPassword').value.trim();
 
             // Variabel Kontak Darurat
             const emContactName = document.getElementById('emContactName').value.trim();
             const emContactPhone = document.getElementById('emContactPhone').value.trim();
 
-            if (!name || !email || !position || !department || !gender || !phone || !salaryRaw) return showToast('Harap lengkapi semua field wajib.', 'error');
+            if (!name || !email || !position || !department || !gender || !phone || !salaryRaw || !password) return showToast('Harap lengkapi semua field wajib.', 'error');
             
             saveOverlay.classList.remove('hidden');
             saveOverlay.classList.add('flex');
@@ -2319,7 +2324,7 @@ function doGet(e) {
                 action: id ? 'edit' : 'add',
                 id: empId,
                 name, email, gender, birthPlace, birthDate, phone, joinDate, position, department, salary: salaryRaw, bankAccount, status,
-                emContactName, emContactPhone
+                emContactName, emContactPhone, password
             };
 
             let oldProfileUrl = '';
@@ -2573,6 +2578,7 @@ function doGet(e) {
 
                     document.getElementById('bankAccount').value = emp.bankAccount || '';
                     document.getElementById('status').value = emp.status || 'Aktif';
+                    document.getElementById('empPassword').value = emp.password || '12345';
                     document.getElementById('emContactName').value = emp.emContactName || ''; 
                     document.getElementById('emContactPhone').value = emp.emContactPhone || ''; 
                     document.getElementById('profileImage').value = ''; 
@@ -2583,6 +2589,7 @@ function doGet(e) {
                 form.reset();
                 document.getElementById('employeeId').value = '';
                 document.getElementById('status').value = 'Aktif';
+                document.getElementById('empPassword').value = '12345'; // Default awal
                 document.getElementById('profileImage').value = ''; 
                 document.getElementById('ktpImage').value = ''; 
                 document.getElementById('emContactName').value = ''; 
