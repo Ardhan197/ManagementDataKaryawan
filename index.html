@@ -289,7 +289,7 @@
             </div>
 
             <!-- Stats Grid Premium -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div id="dashStatsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                 <div class="glass-card rounded-[2rem] p-6 shadow-soft hover:-translate-y-1 transition-transform duration-300 group">
                     <div class="flex justify-between items-start mb-4">
                         <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl shadow-sm border border-blue-100 group-hover:scale-110 transition-transform"><i class="fa-solid fa-users"></i></div>
@@ -501,7 +501,7 @@
                     </button>
                 </div>
                 
-                <button onclick="openManualAttendanceModal()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-6 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap shadow-soft">
+                <button id="btnManualAtt" onclick="openManualAttendanceModal()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-6 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap shadow-soft">
                     <i class="fa-solid fa-keyboard text-blue-500"></i> Input Manual
                 </button>
                 <button onclick="showToast('Fitur tambah cuti sedang dalam pengembangan.', 'success')" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-6 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap shadow-soft ml-auto">
@@ -575,14 +575,14 @@
                             <input type="month" id="salaryMonthFilter" onchange="renderSalaryTable()" class="text-sm bg-transparent border-none p-0 focus:ring-0 font-bold text-slate-800 cursor-pointer w-32">
                         </div>
                     </div>
-                    <button onclick="showToast('Fitur cetak slip gaji masal dalam pengembangan.', 'success')" class="bg-dark hover:bg-slate-800 text-white px-6 py-4 rounded-2xl text-sm font-bold transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2 whitespace-nowrap">
+                    <button id="btnSalaryPrint" onclick="showToast('Fitur cetak slip gaji masal dalam pengembangan.', 'success')" class="bg-dark hover:bg-slate-800 text-white px-6 py-4 rounded-2xl text-sm font-bold transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2 whitespace-nowrap">
                         <i class="fa-solid fa-print"></i> Cetak Massal
                     </button>
                 </div>
             </div>
 
             <!-- Kartu Statistik Keuangan -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div id="salaryStatsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                 <div class="glass-card rounded-[2rem] p-6 shadow-soft flex items-center gap-5">
                     <div class="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-3xl shadow-sm border border-blue-100 shrink-0"><i class="fa-solid fa-users-gear"></i></div>
                     <div>
@@ -1301,8 +1301,8 @@
                 // Cek Karyawan (Username = ID, Pass = 12345 default)
                 const emp = employees.find(e => e.id === user);
                 if (emp && pass === '12345') {
-                    // Karyawan hanya bisa akses dashboard & absensi
-                    currentUser = { id: emp.id, name: emp.name, role: 'karyawan', permissions: 'dashboard,attendance' };
+                    // Karyawan hanya bisa akses dashboard & absensi & gajinya sendiri
+                    currentUser = { id: emp.id, name: emp.name, role: 'karyawan', permissions: 'dashboard,attendance,salary' };
                 } else {
                     return showToast('Username, ID, atau Password salah!', 'error');
                 }
@@ -1327,6 +1327,7 @@
             const perms = currentUser.permissions || '';
             const isAll = perms === 'all' || role === 'owner';
             const permArray = perms.split(',');
+            const isKaryawan = role === 'karyawan';
             
             // Elemen Menu Sidebar
             const menuEmp = document.getElementById('nav-employee').parentElement;
@@ -1338,6 +1339,10 @@
             
             // Elemen Tombol
             const btnDashAddEmp = document.getElementById('btnDashAddEmp');
+            const dashStatsGrid = document.getElementById('dashStatsGrid');
+            const salaryStatsGrid = document.getElementById('salaryStatsGrid');
+            const btnManualAtt = document.getElementById('btnManualAtt');
+            const btnSalaryPrint = document.getElementById('btnSalaryPrint');
             
             // Hide/Show berdasarkan array permissions
             menuEmp.style.display = (isAll || permArray.includes('employee')) ? 'block' : 'none';
@@ -1347,7 +1352,12 @@
             menuBlk.style.display = (isAll || permArray.includes('blacklist')) ? 'block' : 'none';
             menuSet.style.display = (isAll || permArray.includes('settings')) ? 'block' : 'none';
             
-            if(btnDashAddEmp) btnDashAddEmp.style.display = (isAll || permArray.includes('employee')) ? 'flex' : 'none';
+            // Hide elements specific to Karyawan mode
+            if(btnDashAddEmp) btnDashAddEmp.style.display = (isAll || permArray.includes('employee')) && !isKaryawan ? 'flex' : 'none';
+            if(dashStatsGrid) dashStatsGrid.style.display = isKaryawan ? 'none' : 'grid';
+            if(salaryStatsGrid) salaryStatsGrid.style.display = isKaryawan ? 'none' : 'grid';
+            if(btnManualAtt) btnManualAtt.style.display = isKaryawan ? 'none' : 'flex';
+            if(btnSalaryPrint) btnSalaryPrint.style.display = isKaryawan ? 'none' : 'flex';
 
             // Menu Pengaturan Admin (Hanya Owner)
             const adminMgmtSection = document.getElementById('adminManagementSection');
@@ -2037,6 +2047,9 @@ function doGet(e) {
 
         // RENDER HALAMAN DASHBOARD
         function renderDashboard() {
+            if (!currentUser) return;
+            const isKaryawan = currentUser.role === 'karyawan';
+
             // Hitung Statistik
             const activeEmpCount = employees.filter(e => e.status === 'Aktif').length;
             const leaveEmpCount = employees.filter(e => e.status === 'Cuti').length;
@@ -2058,8 +2071,14 @@ function doGet(e) {
             const recentList = document.getElementById('dashRecentActivity');
             if(recentList) {
                 recentList.innerHTML = '';
-                // Balikkan urutan array untuk mengambil yang paling baru, maksimal 8 data
-                const recent = [...allAttendances].reverse().slice(0, 8);
+                let baseAttendances = allAttendances;
+                
+                // Jika Karyawan, Saring Log Hanya Untuk Dirinya
+                if (isKaryawan) {
+                    baseAttendances = allAttendances.filter(a => a['ID Karyawan'] === currentUser.id);
+                }
+                
+                const recent = [...baseAttendances].reverse().slice(0, 8);
                 
                 if(recent.length === 0) {
                     recentList.innerHTML = `
@@ -2810,13 +2829,20 @@ function doGet(e) {
         }
 
         function renderAttendance() {
+            if (!currentUser) return;
             const tbody = document.getElementById('attendanceTableBody');
             const empty = document.getElementById('attendanceEmpty');
             const table = document.getElementById('attendanceTable');
             const dateFilterValue = document.getElementById('attendanceDateFilter').value;
 
             // Filter data murni berdasarkan allAttendances dan tanggal filter
-            const filteredAttendances = allAttendances.filter(a => a.Tanggal === dateFilterValue);
+            let filteredAttendances = allAttendances.filter(a => a.Tanggal === dateFilterValue);
+            
+            // Filter tambahan: Jika yang login adalah Karyawan, hanya tampilkan absensinya sendiri
+            if (currentUser.role === 'karyawan') {
+                filteredAttendances = filteredAttendances.filter(a => a['ID Karyawan'] === currentUser.id);
+            }
+            
             document.getElementById('hadirCountTag').textContent = `(${filteredAttendances.length})`;
 
             if (filteredAttendances.length === 0) {
@@ -2885,28 +2911,39 @@ function doGet(e) {
         }
 
         function renderSalaryTable() {
+            if (!currentUser) return;
             const tbody = document.getElementById('salaryTableBody');
             const empty = document.getElementById('salaryEmpty');
             const table = document.getElementById('salaryTable');
             const monthFilter = document.getElementById('salaryMonthFilter').value; // Mengambil YYYY-MM
             
-            const activeEmployees = employees.filter(e => e.status === 'Aktif');
-            document.getElementById('salaryTotalEmp').textContent = activeEmployees.length;
+            let activeEmployees = employees.filter(e => e.status === 'Aktif');
             
-            let totalSalary = 0;
-            activeEmployees.forEach(emp => { totalSalary += parseRawNum(emp.salary); });
+            // Filter tambahan: Jika yang login Karyawan, hanya tampilkan datanya sendiri
+            if (currentUser.role === 'karyawan') {
+                activeEmployees = activeEmployees.filter(e => e.id === currentUser.id);
+            }
             
-            const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
-            document.getElementById('salaryTotalAmount').textContent = formatter.format(totalSalary);
-            document.getElementById('salaryAvgAmount').textContent = activeEmployees.length > 0 ? formatter.format(Math.floor(totalSalary / activeEmployees.length)) : 'Rp 0';
+            // Hitung statistik keuangan global jika user BUKAN karyawan
+            if (currentUser.role !== 'karyawan') {
+                document.getElementById('salaryTotalEmp').textContent = activeEmployees.length;
+                let totalSalary = 0;
+                activeEmployees.forEach(emp => { totalSalary += parseRawNum(emp.salary); });
+                
+                const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
+                document.getElementById('salaryTotalAmount').textContent = formatter.format(totalSalary);
+                document.getElementById('salaryAvgAmount').textContent = activeEmployees.length > 0 ? formatter.format(Math.floor(totalSalary / activeEmployees.length)) : 'Rp 0';
+            }
 
-            if (employees.length === 0) {
+            if (activeEmployees.length === 0) {
                 empty.classList.remove('hidden'); empty.classList.add('flex'); table.parentElement.classList.add('hidden');
             } else {
                 empty.classList.add('hidden'); empty.classList.remove('flex'); table.parentElement.classList.remove('hidden');
                 tbody.innerHTML = '';
                 
-                employees.forEach(emp => {
+                const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
+                
+                activeEmployees.forEach(emp => {
                     let rawSal = parseRawNum(emp.salary);
                     const sal = rawSal ? formatter.format(rawSal) : '-';
                     const rek = emp.bankAccount ? emp.bankAccount : '-';
@@ -2928,6 +2965,10 @@ function doGet(e) {
                     if (appSettings.salaryMethod === 'capped30' && totalHours > 360) {
                         warningTag = `<div class="text-[9px] text-amber-500 mt-1 font-bold uppercase tracking-widest bg-amber-50 px-2 py-0.5 rounded border border-amber-100">Max Limit</div>`;
                     }
+                    
+                    // Jika login Karyawan, input potongan dinonaktifkan (readonly)
+                    let readonlyAttr = currentUser.role === 'karyawan' ? 'readonly' : '';
+                    let readonlyClass = currentUser.role === 'karyawan' ? 'bg-slate-100 cursor-not-allowed border-transparent' : 'bg-white border-slate-200';
 
                     tbody.innerHTML += `
                         <tr class="hover:bg-slate-50/80 transition-colors cursor-default">
@@ -2944,7 +2985,7 @@ function doGet(e) {
                                 ${warningTag}
                             </td>
                             <td class="py-4 px-6 text-center">
-                                <input type="text" id="loan_${emp.id}" value="0" oninput="formatRupiah(this); calcSalary('${emp.id}', ${rawSal})" class="w-24 px-3 py-1.5 text-sm font-bold border border-slate-200 bg-white shadow-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-right transition-all">
+                                <input type="text" id="loan_${emp.id}" value="0" oninput="formatRupiah(this); calcSalary('${emp.id}', ${rawSal})" class="w-24 px-3 py-1.5 text-sm font-bold border shadow-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-right transition-all ${readonlyClass}" ${readonlyAttr}>
                             </td>
                             <td class="py-4 px-6 text-sm font-black text-emerald-600 text-right bg-emerald-50/30" id="currentSalary_${emp.id}">Rp 0</td>
                             <td class="py-4 px-8 text-right">
