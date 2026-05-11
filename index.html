@@ -83,6 +83,34 @@
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col font-sans antialiased selection:bg-primary/20 selection:text-primary">
 
+    <!-- LOGIN SCREEN OVERLAY -->
+    <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-[100] flex items-center justify-center transition-opacity duration-500">
+        <div class="absolute inset-0 bg-mesh opacity-30"></div>
+        <div class="bg-white rounded-[2rem] p-8 max-w-sm w-full shadow-2xl mx-4 relative z-10">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-teal-600 flex items-center justify-center text-white shadow-glow mx-auto mb-4">
+                    <i class="fa-solid fa-layer-group text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-900">Masuk HRIS<span class="text-primary">.Pro</span></h2>
+                <p class="text-sm font-medium text-slate-500 mt-1">Silakan masuk ke akun Anda</p>
+            </div>
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Username / ID Karyawan</label>
+                    <input type="text" id="loginUser" required class="block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium text-sm transition-all shadow-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Password / PIN</label>
+                    <input type="password" id="loginPass" required class="block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium text-sm transition-all shadow-sm">
+                </div>
+                <button type="submit" class="w-full justify-center rounded-xl bg-gradient-to-r from-primary to-teal-500 px-4 py-3.5 text-sm font-bold text-white shadow-glow hover:from-primaryHover hover:to-teal-600 transition-all hover:-translate-y-0.5 mt-2">Masuk Sistem</button>
+            </form>
+            <div class="mt-6 text-center text-[10px] text-slate-400 font-bold">
+                (Karyawan gunakan ID. Default PIN: 12345)
+            </div>
+        </div>
+    </div>
+
     <!-- Background Premium Mesh -->
     <div class="bg-mesh"></div>
 
@@ -160,7 +188,7 @@
             </ul>
         </div>
 
-        <div class="p-4 bg-slate-900/80 backdrop-blur-md border-t border-slate-800/50">
+        <div id="nav-settings" class="p-4 bg-slate-900/80 backdrop-blur-md border-t border-slate-800/50">
             <button onclick="openSettingsModal(); toggleSidebar()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-slate-800 to-slate-700 hover:from-slate-700 hover:to-slate-600 text-white transition-all group shadow-md hover:shadow-lg font-medium border border-slate-600/50">
                 <i class="fa-solid fa-gear group-hover:rotate-90 transition-transform duration-500"></i> 
                 <span>Pengaturan Sistem</span>
@@ -187,9 +215,19 @@
                         </div>
                         <span id="current-date" class="tracking-wide"></span>
                     </div>
-                    <!-- User Avatar Placeholder -->
-                    <div class="h-10 w-10 rounded-full bg-gradient-to-tr from-slate-200 to-slate-100 border-2 border-white shadow-sm flex items-center justify-center text-slate-500 font-bold overflow-hidden cursor-pointer hover:shadow-md transition-shadow">
-                        <i class="fa-regular fa-user"></i>
+                    
+                    <!-- Profil Singkat & Logout -->
+                    <div class="flex items-center gap-3 border-l border-slate-200 pl-4 ml-2">
+                        <div class="hidden md:block text-right">
+                            <p id="loggedUserName" class="text-sm font-bold text-slate-800 leading-tight">User</p>
+                            <p id="loggedUserRole" class="text-[10px] font-black text-primary tracking-widest uppercase">ROLE</p>
+                        </div>
+                        <div class="h-10 w-10 rounded-full bg-gradient-to-tr from-slate-200 to-slate-100 border-2 border-white shadow-sm flex items-center justify-center text-slate-500 font-bold overflow-hidden cursor-pointer hover:shadow-md transition-shadow">
+                            <i class="fa-regular fa-user"></i>
+                        </div>
+                        <button onclick="handleLogout()" class="w-10 h-10 rounded-xl bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white border border-rose-100 transition-all flex items-center justify-center shadow-sm" title="Keluar">
+                            <i class="fa-solid fa-power-off"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -199,7 +237,7 @@
     <!-- Konten Utama (SPA Wrapper) -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 relative z-10">
         
-        <!-- ==================== HALAMAN DASHBOARD (SUPER KEREN) ==================== -->
+        <!-- ==================== HALAMAN DASHBOARD ==================== -->
         <div id="dashboardPage" class="page-view active">
             <!-- Hero Section Premium -->
             <div class="bg-dark rounded-[2rem] p-8 sm:p-12 mb-10 text-white shadow-2xl relative overflow-hidden group">
@@ -223,7 +261,7 @@
                             <button onclick="showPage('attendancePage')" class="bg-gradient-to-r from-primary to-teal-500 hover:from-primaryHover hover:to-teal-600 text-white font-bold px-6 py-3.5 rounded-2xl transition-all shadow-glow hover:-translate-y-1 flex items-center gap-2">
                                 <i class="fa-solid fa-qrcode text-lg"></i> Buka Scanner Absensi
                             </button>
-                            <button onclick="openModal()" class="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-bold px-6 py-3.5 rounded-2xl transition-all hover:-translate-y-1 flex items-center gap-2">
+                            <button id="btnDashAddEmp" onclick="openModal()" class="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-bold px-6 py-3.5 rounded-2xl transition-all hover:-translate-y-1 flex items-center gap-2">
                                 <i class="fa-solid fa-user-plus text-lg"></i> Tambah Karyawan
                             </button>
                         </div>
@@ -1043,6 +1081,35 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- MANAJEMEN AKSES ADMIN (HANYA UNTUK OWNER) -->
+                        <div class="space-y-8 mt-8 border-t border-slate-100 pt-8" id="adminManagementSection">
+                            <h4 class="text-sm font-extrabold text-rose-500 uppercase tracking-widest flex items-center gap-2">
+                                <span class="w-4 h-px bg-rose-400"></span> Manajemen Akses Admin
+                            </h4>
+                            <div class="bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-600 mb-2">Password Login Admin:</label>
+                                        <input type="text" id="adminPasswordInput" class="w-full rounded-xl border border-slate-200 px-4 py-3 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-600 mb-3">Pilih Hak Akses Menu Admin:</label>
+                                        <div class="grid grid-cols-2 gap-3" id="adminPermissionsCheckboxes">
+                                            <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer hover:text-rose-500 transition-colors"><input type="checkbox" value="employee" class="perm-cb rounded text-rose-500 focus:ring-rose-500"> Data Karyawan</label>
+                                            <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer hover:text-rose-500 transition-colors"><input type="checkbox" value="department" class="perm-cb rounded text-rose-500 focus:ring-rose-500"> Departemen</label>
+                                            <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer hover:text-rose-500 transition-colors"><input type="checkbox" value="attendance" class="perm-cb rounded text-rose-500 focus:ring-rose-500"> Absensi</label>
+                                            <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer hover:text-rose-500 transition-colors"><input type="checkbox" value="salary" class="perm-cb rounded text-rose-500 focus:ring-rose-500"> Gaji Karyawan</label>
+                                            <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer hover:text-rose-500 transition-colors"><input type="checkbox" value="resign" class="perm-cb rounded text-rose-500 focus:ring-rose-500"> Resign</label>
+                                            <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer hover:text-rose-500 transition-colors"><input type="checkbox" value="blacklist" class="perm-cb rounded text-rose-500 focus:ring-rose-500"> Blacklist</label>
+                                            <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer hover:text-rose-500 transition-colors"><input type="checkbox" value="settings" class="perm-cb rounded text-rose-500 focus:ring-rose-500"> Pengaturan Sistem</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="saveAdminSettings()" class="w-full sm:w-auto bg-rose-500 hover:bg-rose-600 text-white px-6 py-3 rounded-xl text-sm font-bold transition-all shadow-md hover:-translate-y-0.5">Simpan Akses Admin</button>
+                            </div>
+                        </div>
+
                     </div>
 
                     <div class="bg-white px-8 py-5 sm:flex sm:flex-row-reverse gap-3 border-t border-slate-100 rounded-b-[2rem] shrink-0">
@@ -1181,6 +1248,108 @@
         let editDepartmentIndex = -1;
         let allAttendances = [];
         let appSettings = { deptLabel: 'Departemen', salaryMethod: 'extra31' };
+        
+        let accounts = []; // Menyimpan akun sistem dari Google Sheets
+        const defaultAccounts = [
+            {username: 'owner', password: 'owner123', role: 'owner', permissions: 'all'},
+            {username: 'admin', password: 'admin123', role: 'admin', permissions: 'dashboard,employee,attendance,salary,resign,blacklist'}
+        ];
+
+        // --- AUTENTIKASI & HAK AKSES ---
+        let currentUser = JSON.parse(localStorage.getItem('hris_user')) || null;
+
+        function checkAuth() {
+            const loginScreen = document.getElementById('loginScreen');
+            if (!currentUser) {
+                loginScreen.classList.remove('hidden');
+                return false;
+            }
+            loginScreen.classList.add('hidden');
+            applyPermissions();
+            
+            // Update UI Info di Navbar Atas
+            document.getElementById('loggedUserName').textContent = currentUser.name;
+            document.getElementById('loggedUserRole').textContent = currentUser.role;
+            
+            return true;
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('loginUser').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            
+            // Ambil akun dari Google Sheet jika sudah di load, atau fallback ke default
+            let accList = accounts.length > 0 ? accounts : defaultAccounts;
+            const acc = accList.find(a => (a.Username === user || a.username === user));
+            
+            if (acc) {
+                const accPass = acc.Password || acc.password;
+                if (pass === accPass) {
+                    const role = acc.Role || acc.role;
+                    const perms = acc.Permissions || acc.permissions;
+                    currentUser = { id: user, name: role === 'owner' ? 'Owner System' : 'Admin HR', role: role, permissions: perms };
+                } else {
+                    return showToast('Password salah!', 'error');
+                }
+            } else {
+                // Cek Karyawan (Username = ID, Pass = 12345 default)
+                const emp = employees.find(e => e.id === user);
+                if (emp && pass === '12345') {
+                    // Karyawan hanya bisa akses dashboard & absensi
+                    currentUser = { id: emp.id, name: emp.name, role: 'karyawan', permissions: 'dashboard,attendance' };
+                } else {
+                    return showToast('Username, ID, atau Password salah!', 'error');
+                }
+            }
+            
+            localStorage.setItem('hris_user', JSON.stringify(currentUser));
+            document.getElementById('loginForm').reset();
+            checkAuth();
+            showToast('Berhasil masuk sebagai ' + currentUser.role.toUpperCase());
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('hris_user');
+            checkAuth();
+            showPage('dashboardPage'); // Reset view ke awal
+        }
+
+        function applyPermissions() {
+            if(!currentUser) return;
+            const role = currentUser.role;
+            const perms = currentUser.permissions || '';
+            const isAll = perms === 'all' || role === 'owner';
+            const permArray = perms.split(',');
+            
+            // Elemen Menu Sidebar
+            const menuEmp = document.getElementById('nav-employee').parentElement;
+            const menuDept = document.getElementById('nav-department').parentElement;
+            const menuSal = document.getElementById('nav-salary').parentElement;
+            const menuRes = document.getElementById('nav-resign').parentElement;
+            const menuBlk = document.getElementById('nav-blacklist').parentElement;
+            const menuSet = document.getElementById('nav-settings');
+            
+            // Elemen Tombol
+            const btnDashAddEmp = document.getElementById('btnDashAddEmp');
+            
+            // Hide/Show berdasarkan array permissions
+            menuEmp.style.display = (isAll || permArray.includes('employee')) ? 'block' : 'none';
+            menuDept.style.display = (isAll || permArray.includes('department')) ? 'block' : 'none';
+            menuSal.style.display = (isAll || permArray.includes('salary')) ? 'block' : 'none';
+            menuRes.style.display = (isAll || permArray.includes('resign')) ? 'block' : 'none';
+            menuBlk.style.display = (isAll || permArray.includes('blacklist')) ? 'block' : 'none';
+            menuSet.style.display = (isAll || permArray.includes('settings')) ? 'block' : 'none';
+            
+            if(btnDashAddEmp) btnDashAddEmp.style.display = (isAll || permArray.includes('employee')) ? 'flex' : 'none';
+
+            // Menu Pengaturan Admin (Hanya Owner)
+            const adminMgmtSection = document.getElementById('adminManagementSection');
+            if(adminMgmtSection) {
+                adminMgmtSection.style.display = (role === 'owner') ? 'block' : 'none';
+            }
+        }
 
         // FUNGSI RENDER NAMA/LABEL DINAMIS
         function updateDynamicLabels() {
@@ -1273,7 +1442,7 @@
                 activeEl.className = 'flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary border-l-4 border-primary transition-all nav-link font-semibold shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]';
             }
             
-            // Tutup sidebar otomatis setelah menu diklik
+            // Tutup sidebar otomatis setelah menu diklik (berlaku di semua perangkat)
             if(isSidebarOpen) toggleSidebar();
         }
 
@@ -1396,7 +1565,7 @@
             syncDepartmentsToDB(newDeps, 'Pembaruan data selesai');
         }
 
-        // Script Template Google Apps Script
+        // Script Template Google Apps Script (Dengan Papan Accounts)
         const scriptTemplate = `function setup() {
   // WAJIB DIJALANKAN SEKALI (Klik tombol 'Run') UNTUK IZIN GOOGLE DRIVE
   DriveApp.getRootFolder();
@@ -1419,6 +1588,14 @@
     s.appendRow(['Key', 'Value']);
     s.appendRow(['deptLabel', 'Departemen']);
     s.appendRow(['salaryMethod', 'extra31']);
+  }
+  
+  // Tab untuk Data Login
+  if(!ss.getSheetByName('Accounts')) {
+    var s = ss.insertSheet('Accounts');
+    s.appendRow(['Username', 'Password', 'Role', 'Permissions']);
+    s.appendRow(['owner', 'owner123', 'owner', 'all']);
+    s.appendRow(['admin', 'admin123', 'admin', 'dashboard,employee,attendance,salary,resign,blacklist']);
   }
 }
 
@@ -1453,6 +1630,15 @@ function doPost(e) {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var data = JSON.parse(e.postData.contents);
     var action = data.action;
+
+    if (action === 'sync_accounts') {
+      var accSheet = ss.getSheetByName('Accounts') || ss.insertSheet('Accounts');
+      accSheet.clear();
+      accSheet.appendRow(['Username', 'Password', 'Role', 'Permissions']);
+      var rows = data.accounts.map(function(a){ return [a.username, a.password, a.role, a.permissions]; });
+      accSheet.getRange(2, 1, rows.length, 4).setValues(rows);
+      return ContentService.createTextOutput(JSON.stringify({"status":"success"})).setMimeType(ContentService.MimeType.JSON);
+    }
 
     if (action === 'sync_settings') {
       var setSheet = ss.getSheetByName('Settings') || ss.insertSheet('Settings');
@@ -1661,11 +1847,14 @@ function doGet(e) {
         if(r.Key) settingsObj[r.Key] = r.Value; 
     });
 
+    var accountsData = getSheetData('Accounts', ['Username', 'Password', 'Role', 'Permissions']);
+
     return ContentService.createTextOutput(JSON.stringify({
       employees: empData,
       attendance: attendanceData,
       departments: deptArray,
-      settings: settingsObj
+      settings: settingsObj,
+      accounts: accountsData
     })).setMimeType(ContentService.MimeType.JSON);
 
   } catch (error) {
@@ -1683,7 +1872,8 @@ function doGet(e) {
         const searchInput = document.getElementById('searchInput');
         const saveOverlay = document.getElementById('saveOverlay');
 
-        // Initial Load
+        // Initial Load & Cek Login
+        checkAuth();
         loadData();
 
         // Auto Sync setiap 10 saat di Background (Senyap)
@@ -1726,6 +1916,11 @@ function doGet(e) {
                 
                 if (newData && newData.employees !== undefined) {
                     
+                    // Update Accounts Database
+                    if (newData.accounts) {
+                        accounts = newData.accounts;
+                    }
+
                     // Update Settings App Label & Mode Gaji
                     if (newData.settings) {
                         if (newData.settings.deptLabel) appSettings.deptLabel = newData.settings.deptLabel;
@@ -2089,6 +2284,20 @@ function doGet(e) {
         // PENGATURAN LOGIC
         function openSettingsModal() {
             document.getElementById('gasUrlInput').value = getAppScriptUrl() || '';
+            
+            // Populate data admin settings jika owner yang buka
+            if (currentUser && currentUser.role === 'owner') {
+                let accList = accounts.length > 0 ? accounts : defaultAccounts;
+                const adminAcc = accList.find(a => (a.Role === 'admin' || a.role === 'admin'));
+                if(adminAcc) {
+                    document.getElementById('adminPasswordInput').value = adminAcc.Password || adminAcc.password || 'admin123';
+                    const perms = (adminAcc.Permissions || adminAcc.permissions || '').split(',');
+                    document.querySelectorAll('.perm-cb').forEach(cb => {
+                        cb.checked = perms.includes(cb.value);
+                    });
+                }
+            }
+
             const modal = document.getElementById('settingsModal');
             modal.classList.remove('hidden');
             const panel = modal.querySelector('.transform');
@@ -2139,6 +2348,41 @@ function doGet(e) {
                 setTimeout(async () => {
                     await loadData(true);
                     showToast('Konfigurasi Live diterapkan!', 'success');
+                }, 2000);
+            } catch(e) {
+                showToast('Gagal merubah sistem awan.', 'error');
+            }
+        }
+        
+        async function saveAdminSettings() {
+            const gasUrl = getAppScriptUrl();
+            if (!gasUrl) return showToast('Pautkan URL Database terlebih dahulu.', 'error');
+            
+            const newPass = document.getElementById('adminPasswordInput').value.trim();
+            const checkedPerms = Array.from(document.querySelectorAll('.perm-cb:checked')).map(cb => cb.value).join(',');
+            
+            if(!newPass) return showToast('Password Admin tidak boleh kosong.', 'error');
+
+            let accList = accounts.length > 0 ? accounts : defaultAccounts;
+            let updatedAccounts = accList.map(a => {
+                let r = a.Role || a.role;
+                if (r === 'admin') {
+                    return { username: 'admin', password: newPass, role: 'admin', permissions: checkedPerms };
+                }
+                return { username: a.Username || a.username, password: a.Password || a.password, role: r, permissions: a.Permissions || a.permissions };
+            });
+
+            showToast('Menyimpan akses admin...', 'success');
+            try {
+                await fetch(gasUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify({ action: 'sync_accounts', accounts: updatedAccounts })
+                });
+                setTimeout(async () => {
+                    await loadData(true);
+                    showToast('Akses Admin berhasil diperbarui!', 'success');
                 }, 2000);
             } catch(e) {
                 showToast('Gagal merubah sistem awan.', 'error');
